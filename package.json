@@ -1,0 +1,41 @@
+{
+  "name": "cargo-code-hackathon",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.17.11",
+    "@react-native-picker/picker": "2.4.8",
+    "@react-navigation/bottom-tabs": "^6.5.8",
+    "@react-navigation/native": "^6.1.7",
+    "@react-navigation/native-stack": "^6.9.13",
+    "@trimblemaps/trimblemaps-js": "^3.10.0",
+    "@trimblemaps/trimblemaps-mapmenus": "^1.0.4",
+    "axios": "^1.4.0",
+    "expo": "~48.0.18",
+    "expo-status-bar": "~1.4.4",
+    "jwt-decode": "^3.1.2",
+    "pod-install": "^0.1.38",
+    "react": "18.2.0",
+    "react-native": "0.71.8",
+    "react-native-safe-area-context": "4.5.0",
+    "react-native-screens": "~3.20.0",
+    "react-native-toast-message": "^2.1.6",
+    "react-native-webview": "11.26.0",
+    "socket.io-client": "^4.7.1",
+    "storeon": "^3.1.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/axios": "^0.14.0",
+    "@types/react": "~18.0.14",
+    "@types/react-native": "^0.72.2",
+    "typescript": "^4.9.4"
+  },
+  "private": true
+}
