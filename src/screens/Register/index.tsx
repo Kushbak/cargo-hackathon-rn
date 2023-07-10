@@ -109,7 +109,6 @@ const Register = ({ navigation }: RegisterScreenProps) => {
             <CustomTextInput
               onSubmitEditing={() => lastnameRef.current?.focus()}
               onChangeText={handleChangeFormData("firstname")}
-              width="80%"
               label="First Name"
               returnKeyType="next"
               textContentType="givenName"
@@ -118,7 +117,6 @@ const Register = ({ navigation }: RegisterScreenProps) => {
               ref={lastnameRef}
               onSubmitEditing={() => emailRef.current?.focus()}
               onChangeText={handleChangeFormData("lastname")}
-              width="80%"
               label="Last Name"
               returnKeyType="next"
               textContentType="givenName"
@@ -127,7 +125,6 @@ const Register = ({ navigation }: RegisterScreenProps) => {
               ref={emailRef}
               onSubmitEditing={() => phoneRef.current?.focus()}
               onChangeText={handleChangeFormData("email")}
-              width="80%"
               label="Email"
               returnKeyType="next"
               textContentType="emailAddress"
@@ -137,7 +134,6 @@ const Register = ({ navigation }: RegisterScreenProps) => {
             <CustomTextInput
               ref={phoneRef}
               onChangeText={handleChangeFormData("phone")}
-              width="80%"
               label="Phone Number"
               returnKeyType="next"
               textContentType="telephoneNumber"
@@ -169,7 +165,6 @@ const Register = ({ navigation }: RegisterScreenProps) => {
               ref={passwordRef}
               onSubmitEditing={() => addressRef.current?.focus()}
               onChangeText={handleChangeFormData("password")}
-              width="80%"
               label="Password"
               returnKeyType="next"
               textContentType="password"
@@ -180,7 +175,6 @@ const Register = ({ navigation }: RegisterScreenProps) => {
               ref={addressRef}
               onSubmitEditing={() => mcdotnumberRef.current?.focus()}
               onChangeText={handleChangeFormData("physical_address")}
-              width="80%"
               label="Physical Address"
               returnKeyType="next"
               textContentType="fullStreetAddress"
@@ -188,7 +182,6 @@ const Register = ({ navigation }: RegisterScreenProps) => {
             <CustomTextInput
               ref={mcdotnumberRef}
               onChangeText={handleChangeFormData("mc_dot_number")}
-              width="80%"
               label="MC DOT Number"
               returnKeyType="done"
             />
@@ -234,7 +227,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   formContainer: {
-    width: "100%",
+    width: "80%",
     display: "flex",
     alignItems: "center",
     marginVertical: 30,
@@ -244,6 +237,7 @@ const styles = StyleSheet.create({
     display: "flex",
     marginTop: 12,
     flexDirection: "row",
+    alignItems: 'center',
   },
   errorText: {
     fontSize: 12,

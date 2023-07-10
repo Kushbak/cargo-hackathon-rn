@@ -1,79 +1,123 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
 import { OrdersListScreenProps } from "../types";
 import { ordersApi } from "../../api";
-import Loader from "../../components/Loader";
+import Loader, { DotLoader } from "../../components/Loader";
 import { Order } from "../../store/types";
 import NoDataText from "../../components/NoDataText";
 import { SOCKET_EVENTS, Screens } from "../../const";
 import OrderItem from "../../components/OrderItem";
 import socket from "../../utils/socket";
+import { useFocusEffect } from "@react-navigation/native";
+import { useStoreon } from "storeon/react";
+import { Events, States } from "../../store";
 
 const OrdersList = ({ navigation }: OrdersListScreenProps) => {
   const [isOrdersLoading, setIsOrdersLoading] = useState(false);
-  const [orders, setOrders] = useState<Order[]>([]);
+  const { dispatch, orders, activeOrder } = useStoreon<States, Events>(
+    "orders",
+    "activeOrder"
+  );
 
-  useEffect(() => {
-    setIsOrdersLoading(true);
-    ordersApi
-      .getAllOrders()
-      .then((data) => {
-        setOrders(
-          data.sort(
-            (a, b) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          )
+  const setOrders = (newOrders: Order[]) => {
+    dispatch(
+      "orders/setOrders",
+      newOrders.sort((a, b) => {
+        return (
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
       })
-      .finally(() => setIsOrdersLoading(false))
-  }, []);
+    );
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsOrdersLoading(true);
+      ordersApi
+        .getAllOrders()
+        .then((data) => setOrders(data))
+        .finally(() => setIsOrdersLoading(false));
+    }, [])
+  );
 
   useEffect(() => {
     const eventhandler = (data: any) => {
-      setOrders((prevState) => ([data, ...prevState]))
-    }
+      setOrders([data, ...orders]);
+    };
     socket.on(SOCKET_EVENTS.createOrder, eventhandler);
 
     return () => {
-      socket.off(SOCKET_EVENTS.createOrder, eventhandler)
-    }
+      socket.off(SOCKET_EVENTS.createOrder, eventhandler);
+    };
   }, [orders]);
 
+  if (isOrdersLoading && !orders) return <Loader />;
+  const ordersListStyle = StyleSheet.compose(
+    styles.ordersList,
+    activeOrder ? styles.ordersListWithActiveOrder : {}
+  );
   return (
     <View style={styles.ordersListContainer}>
-      {!isOrdersLoading ? (
-        <ScrollView style={styles.ordersList}>
-          {orders.length ? (
-            orders.map((item) => (
-              <Pressable
-                key={item.id}
-                style={styles.ordersItem}
-                onPress={() => navigation.navigate(Screens.orderDetail, { orderId: item.id })}
-              >
-                <OrderItem order={item} />
-              </Pressable>
-            ))
-          ) : (
-            <NoDataText />
-          )}
-        </ScrollView>
-      ) : (
-        <Loader />
+      {activeOrder && (
+        <OrderItem
+          order={activeOrder}
+          onPress={() =>
+            navigation.navigate(Screens.orderDetail, {
+              orderId: activeOrder.id,
+            })
+          }
+          style={styles.activeOrder}
+        />
       )}
+      <ScrollView
+        contentContainerStyle={styles.ordersContentList}
+        style={ordersListStyle}
+      >
+        {!!(isOrdersLoading && orders) && <DotLoader />}
+        {!!orders.length &&
+          orders.map((item, idx) => (
+            <OrderItem
+              key={item.id}
+              order={item}
+              onPress={() =>
+                navigation.navigate(Screens.orderDetail, { orderId: item.id })
+              }
+            />
+          ))}
+        {!orders.length && <NoDataText />}
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   ordersListContainer: {
-    padding: 20,
     flex: 1,
   },
   ordersList: {},
-  ordersContentList: {},
-  ordersItem: {
-    height: 60,
+  ordersListWithActiveOrder: {
+    paddingTop: 160,
+  },
+  ordersContentList: {
+    display: "flex",
+    gap: 4,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "stretch",
+  },
+  activeOrder: {
+    position: "absolute",
+    top: 0,
+    left: 1,
+    right: 1,
+    borderColor: "#111111",
+    borderWidth: 2,
+    borderStyle: "solid",
+    backgroundColor: "#eee",
+    zIndex: 2,
+  },
+  nextToActive: {
+    marginTop: 120,
   },
 });
 

@@ -52,7 +52,6 @@ const Login = ({ navigation }: LoginScreenProps) => {
             onSubmitEditing={() => passwordRef.current?.focus()}
             value={email}
             onChangeText={(text) => setEmail(text)}
-            width="80%"
             label="Email"
             keyboardType="email-address"
             returnKeyType="next"
@@ -64,7 +63,6 @@ const Login = ({ navigation }: LoginScreenProps) => {
             onSubmitEditing={onLoginClick}
             value={password}
             onChangeText={(text) => setPassword(text)}
-            width="80%"
             label="Password"
             keyboardType="visible-password"
             returnKeyType="send"
@@ -88,15 +86,6 @@ const Login = ({ navigation }: LoginScreenProps) => {
               style={{ paddingLeft: 5, paddingRight: 10 }}
             />
           </View>
-          <View style={styles.continueAsGuest}>
-            <CustomButton
-              btnType="link"
-              title="Continue as Guest"
-              onPress={() => navigation.navigate(Screens.home)}
-              accessibilityLabel="Button to navigate Home Page"
-              style={{ paddingLeft: 5, paddingRight: 10 }}
-            />
-          </View>
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -117,18 +106,19 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   formContainer: {
-    width: "100%",
+    width: "80%",
     display: "flex",
     alignItems: "center",
     marginVertical: 60,
     gap: 10,
   },
+  loginBtnBlock: {},
   haveNoAccContainer: {
     display: "flex",
+    alignItems: 'center',
     marginTop: 12,
     flexDirection: "row",
   },
-  continueAsGuest: {},
   errorText: {
     fontSize: 12,
     color: "red",

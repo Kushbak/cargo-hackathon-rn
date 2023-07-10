@@ -1,21 +1,14 @@
 import axios from "axios";
 import jwtDecode from 'jwt-decode'
 import Toast from 'react-native-toast-message'
-import { CarrierUser, CreateUser, LoginData, Order, ShipperUser, TOKEN_RESPONSE, TrimbleLocation, User, UserTokenedData } from "../store/types";
+import { CarrierUser, CreateUser, LoginData, Order, ShipperUser, TOKEN_RESPONSE, TrimbleLocation, TrimbleRouteCoordinates, User, UserTokenedData } from "../store/types";
 import { getToken, getUserData, removeToken, removeUserData, saveToken, saveUserData } from "../utils/asyncStorage";
-
-// marlen ip - http://172.16.3.75:3000/
-// timur ip - http://172.16.3.78:3000/
-// local ip - http://172.16.3.121:3000/
+import { store } from '../store'
 
 const instance = axios.create({
   baseURL: process.env.NODE_ENV === 'production'
-    ? 'https://cargocode-hackaton.onrender.com/'
-    // : 'http://172.16.3.121:3000', // my
-    : 'http://172.16.3.75:3000/', // mara
-  // : 'http://172.16.3.78:3000/', // tima
-  // ? process.env.EXPO_PUBLIC_PROD_API 
-  // : process.env.EXPO_PUBLIC_DEV_API,
+  ? process.env.EXPO_PUBLIC_PROD_API 
+  : process.env.EXPO_PUBLIC_DEV_API,
   headers: {
     "Content-Type": 'application/json'
   }
@@ -32,23 +25,20 @@ instance.interceptors.response.use(
   (error) => {
     return new Promise((resolve, reject) => {
       if (error.response?.status === 401) {
-        // onRefreshToken({
-        //   initialRequest: error.config,
-        //   resolve,
-        //   reject,
-        // });
         authApi.logout()
           .then(() => {
-            reject(error.response.data)
+            Toast.show({ type: 'error', text1: 'No Authorized' })
+            store.dispatch('profile/clear')
           })
       } else if (error.response) {
-        if (error.response?.status !== 400) {
+        if (error.response?.status >= 500) {
           Toast.show({
             type: 'error',
-            text1: 'Something went wrong. Please try again'
+            text1: 'Server Error. Please try again later',
+            text2: process.env.NODE_ENV === 'development' ? error.response.message : undefined
           })
+          console.log('error response not 401', )
         }
-        console.log('error response not 401', error.response)
         reject(error.response.data);
       } else {
         console.log('just error', error.status, { error, config: error.config })
@@ -57,6 +47,8 @@ instance.interceptors.response.use(
     });
   },
 );
+
+// SERVICES
 
 export const authApi = {
   login: async (data: LoginData) => {
@@ -69,8 +61,12 @@ export const authApi = {
   },
   getProfile: async () => {
     const userData = await authApi._getUserData()
-    const res = await usersApi.getUserById(userData?.id)
-    return res
+    if(userData?.id) {
+      const res = await usersApi.getUserById(userData?.id)
+      return res
+    }
+    await authApi.logout()
+    store.dispatch('profile/clear')
   },
   setToken: async (token: string) => {
     try {
@@ -173,23 +169,24 @@ export const ordersApi = {
     return res.data
   },
   acceptOrder: async (orderId: number) => {
-    const res = await instance.put('orders/accept-order', undefined, { params: { orderId } })
+    const res = await instance.put(`orders/accept-order/${orderId}`)
     return res.data
   },
   startShipping: async (orderId: number) => {
-    const res = await instance.put('orders/start-shipping', undefined, { params: { orderId } })
+    const res = await instance.put(`orders/start-shipping/${orderId}`)
     return res.data
   },
   deliveredShipping: async (orderId: number) => {
-    const res = await instance.put('orders/delivered-shipping', undefined, { params: { orderId } })
+    const res = await instance.put(`orders/delivered-shipping/${orderId}`)
     return res.data
   },
-  finishShipping: async (orderId: number, data: { file: File }) => {
+  finishShipping: async (orderId: number, data: FormData) => {
+    console.log({ orderId, data })
+    
     const res = await instance.put(
-      'orders/finish-shipping',
+      `orders/finish-shipping/${orderId}`,
       data,
       {
-        params: { orderId },
         headers: { "Content-Type": 'multipart/form-data' }
       }
     )
@@ -207,21 +204,10 @@ export const ordersApi = {
 
 export const trimbleApi = {
   getLocation: async (params: TrimbleLocation) => {
-    const res = await instance.get('trimble/location', { params })
+    const res = await instance.get<TrimbleRouteCoordinates>('trimble/location', { params })
     return res.data
   }
 }
-
-// template to request with catch error response
-// const makeRequest = async <T>(request: () => Promise<T>) => {
-//   try {
-//     return await request()
-//   } catch(e: any) {
-//     if (e.response?.data) {
-//       throw e.response.data
-//     }
-//   }
-// }
 
 // const mapboxApi = {
 //   getDistance: async () => {

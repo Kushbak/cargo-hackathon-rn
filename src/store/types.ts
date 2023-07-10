@@ -26,14 +26,18 @@ export type UserTokenedData = {
 }
 
 export type CarrierUser = {
+  id: number
   physical_address: string
   mc_dot_number: string
   company_id: number | string
-} & User
+  user: User
+}
 
 export type ShipperUser = {
+  id: number
   billing_address: string
-} & User
+  user: User
+}
 
 export type OperatorUser = {
   company_id: number
@@ -53,27 +57,27 @@ export enum OrderStatus {
 }
 
 export type Order = {
-    id: number
-    created_at: Date
-    price: number
-    currency: string
-    pickup_location: string
-    destination: string
-    origin_latitude: string
-    origin_longitude: string
-    destination_latitude: string
-    destination_longitude: string
-    pickup_date: Date
-    delivery_date: Date
-    weight: number
-    type: string
-    required_equipment: null,
-    special_instructions: null,
-    status: OrderStatus
-    active: true,
-    acceptance_image: null,
-    shipper: ShipperUser
-    carrier: CarrierUser
+  id: number
+  created_at: Date
+  price: number
+  currency: string
+  pickup_location: string
+  destination: string
+  origin_latitude: string
+  origin_longitude: string
+  destination_latitude: string
+  destination_longitude: string
+  pickup_date: string
+  delivery_date: string
+  weight: number
+  type: string
+  required_equipment: null,
+  special_instructions: null,
+  status: OrderStatus
+  active: true,
+  acceptance_image: null,
+  shipper: ShipperUser
+  carrier: CarrierUser
 }
 
 export type TrimbleLocation = {
@@ -100,4 +104,67 @@ export type SelectValue = {
 
 export type TOKEN_RESPONSE = {
   access_token: string
+}
+
+export type TrimbleRouteCoordinates = {
+  start: {
+    Err: number
+    Locations: [
+      {
+        Address: {
+          StreetAddress: string
+          LocalArea: string
+          City: string
+          State: string
+          StateName: string
+          Zip: string
+          County: string
+          Country: string
+          CountryFullName: string
+          SPLC: string | null
+        },
+        Coords: {
+          Lat: string | number
+          Lon: string | number
+        },
+        Region: number
+        POITypeID: number
+        PersistentPOIID: number
+        SiteID: number
+        ResultType: number
+        ShortString: string
+        TimeZone: string
+      }
+    ]
+  },
+  end: {
+    Err: number,
+    Locations: [
+      {
+        Address: {
+          StreetAddress: string
+          LocalArea: string,
+          City: string
+          State: string
+          StateName: string
+          Zip: string
+          County: string
+          Country: string
+          CountryFullName: string
+          SPLC: null
+        },
+        Coords: {
+          Lat: string | number
+          Lon: string | number
+        },
+        Region: number
+        POITypeID: number
+        PersistentPOIID: number
+        SiteID: number
+        ResultType: number
+        ShortString: string
+        TimeZone: string
+      }
+    ]
+  }
 }

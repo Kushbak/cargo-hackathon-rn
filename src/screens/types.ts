@@ -12,6 +12,7 @@ export type StackRoutes = {
   ActiveOrderMap: { orderId: number }
   ChatList: undefined
   ChatItem: { orderId: number }
+  CameraScreen: { orderId: number }
 }
 
 export type LoginScreenProps = NativeStackScreenProps<StackRoutes, 'Login'>
@@ -23,3 +24,4 @@ export type ProfileScreenProps = NativeStackScreenProps<StackRoutes, 'Profile'>
 export type ActiveOrderMapScreenProps = NativeStackScreenProps<StackRoutes, 'ActiveOrderMap'>
 export type ChatListScreenProps = NativeStackScreenProps<StackRoutes, 'ChatList'>
 export type ChatItemScreenProps = NativeStackScreenProps<StackRoutes, 'ChatItem'>
+export type CameraScreenProps = NativeStackScreenProps<StackRoutes, 'CameraScreen'>

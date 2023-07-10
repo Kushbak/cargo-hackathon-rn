@@ -1,3 +1,5 @@
+import { OrderStatus } from "./store/types"
+
 export const Screens = {
   login: 'Login',
   register: 'Register',
@@ -7,6 +9,7 @@ export const Screens = {
   profile: 'Profile',
   chatList: 'ChatList',
   chatItem: 'ChatItem',
+  cameraScreen: 'CameraScreen',
 } as const
 
 export const INDIVIDUAL_CARRIER_SELECT_DATA = {
@@ -22,3 +25,14 @@ export const SOCKET_EVENTS = {
   createOrder: 'orders:create-order',
 }
 
+export const ACTIVE_ORDER_STATUSES = [
+  OrderStatus.accepted,
+  OrderStatus.on_way,
+  OrderStatus.delivered,
+]
+
+export const ORDER_STATUSES_WITH_MAP_PREVIEW = [
+  OrderStatus.waiting,
+  OrderStatus.accepted,
+  OrderStatus.on_way,
+]

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useStoreon } from "storeon/react";
@@ -6,7 +6,7 @@ import OrdersList from "../OrdersList";
 import Profile from "../Profile";
 import { HomeScreenProps, StackRoutes } from "../types";
 import { authApi, ordersApi } from "../../api";
-import { SOCKET_EVENTS, Screens } from "../../const";
+import { ACTIVE_ORDER_STATUSES, SOCKET_EVENTS, Screens } from "../../const";
 import Loader from "../../components/Loader";
 import ActiveOrderMap from "../ActiveOrderMap";
 import socket from "../../utils/socket";
@@ -14,11 +14,12 @@ import ChatList from "../ChatList";
 import Toast from "react-native-toast-message";
 import { Events, States } from "../../store";
 import { OrderStatus } from "../../store/types";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator<StackRoutes>();
 
 const Home = ({ navigation }: HomeScreenProps) => {
-  const [gettingUser, setGettingUser] = useState(true);
+  const [fetchingUserData, setFetchingUserData] = useState(true);
   const { dispatch, activeOrder, profileData } = useStoreon<States, Events>(
     "activeOrder",
     "profileData"
@@ -37,44 +38,41 @@ const Home = ({ navigation }: HomeScreenProps) => {
     });
   };
 
-  const getProfileData = () => {
-    return authApi.getProfile().then((data) => {
-      dispatch("profile/save", data);
-    });
+  const getProfileData = async () => {
+    const data = await authApi.getProfile();
+    dispatch("profile/save", data);
   };
 
-  const setMyActiveOrder = () => {
-    if (activeOrder) return;
-    return ordersApi.getMyOrders().then((data) => {
-      dispatch(
-        "orders/setActiveOrder",
-        data.find(
-          (item) =>
-            [
-              OrderStatus.accepted,
-              OrderStatus.delivered,
-              OrderStatus.on_way,
-            ].includes(item.status) && item.carrier.id === profileData?.id
-        )
-      );
-    });
+  const setMyActiveOrder = async () => {
+    if (activeOrder || !profileData) return Promise.reject();
+
+    const data = await ordersApi.getMyOrders();
+    const activeStatusOrder = data.find(
+      (item) => ACTIVE_ORDER_STATUSES.includes(item.status) && item.carrier.id === profileData?.id
+    );
+    dispatch("orders/setActiveOrder", activeStatusOrder);
   };
 
   useEffect(() => {
-    setGettingUser(true);
+    setFetchingUserData(true);
     authApi
       .getToken()
       .then((token) => {
         console.log({ token });
         if (!token) return navigation.replace(Screens.login);
       })
-      .finally(() => setGettingUser(false))
-      .then(() => getProfileData())
-      .then(() => setMyActiveOrder())
-      .then(() => connectReceiveOrdersSocket());
+      .finally(() => setFetchingUserData(false))
+      .then(getProfileData)
+      .then(connectReceiveOrdersSocket);
   }, []);
 
-  if (gettingUser) return <Loader />;
+  useFocusEffect(useCallback(() => {
+    if(profileData) {
+      setMyActiveOrder()
+    }
+  }, [activeOrder, profileData]))
+
+  if (fetchingUserData) return <Loader />;
   return (
     <View style={styles.container}>
       <Tab.Navigator>

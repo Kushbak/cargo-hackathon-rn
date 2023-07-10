@@ -75,7 +75,6 @@ const Profile = ({ navigation }: ProfileScreenProps) => {
   };
 
   useEffect(() => {
-    console.log({ profileData });
     getProfileData()
       .then(() => getMyOrders())
       .then(() => setMyActiveOrder());
@@ -134,7 +133,6 @@ const Profile = ({ navigation }: ProfileScreenProps) => {
           btnType="filled"
           onPress={logout}
           title={isLogingOut ? "Loging out..." : "Log Out"}
-          // style={}
         />
       </View>
     </View>
@@ -162,7 +160,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    paddingVertical: 12,
+    padding: 12,
     borderTopColor: "#eee",
     borderTopWidth: 4,
     borderStyle: "solid",

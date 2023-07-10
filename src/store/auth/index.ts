@@ -7,7 +7,7 @@ export type AuthState = {
 
 export type AuthEvents = {
   'profile/save': User
-  'profile/clear': null
+  'profile/clear': undefined
 }
 
 const profileStore: StoreonModule<AuthState, AuthEvents> = (store) => {

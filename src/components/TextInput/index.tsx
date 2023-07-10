@@ -21,7 +21,7 @@ const CustomTextInput = forwardRef<TextInput, Props>(
     {
       label,
       placeholder,
-      width,
+      width = '100%',
       onChangeText,
       value,
       defaultValue,
