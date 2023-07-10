@@ -11,6 +11,7 @@ import ChatItem from "./src/screens/ChatItem";
 import Toast from "react-native-toast-message";
 import OrderDetail from "./src/screens/OrderDetail";
 import CameraScreen from "./src/screens/CameraScreen";
+import ActiveOrderMap from "./src/screens/ActiveOrderMap";
 
 const Stack = createNativeStackNavigator<StackRoutes>();
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
           <Stack.Screen name={Screens.chatItem} component={ChatItem} />
           <Stack.Screen name={Screens.orderDetail} component={OrderDetail} />
           <Stack.Screen name={Screens.cameraScreen} component={CameraScreen} />
+          <Stack.Screen name={Screens.activeOrderMap} component={ActiveOrderMap} />
         </Stack.Navigator>
       </NavigationContainer>
       <Toast />

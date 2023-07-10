@@ -15,9 +15,9 @@ import NoDataText from "../../components/NoDataText";
 import Title from "../../components/Title";
 import { useFocusEffect } from "@react-navigation/native";
 import { ORDER_STATUSES_WITH_MAP_PREVIEW, Screens } from "../../const";
-import ActiveOrderMap from "../ActiveOrderMap";
-import Map from "../../components/Map";
+import { PreviewMap } from "../../components/Map";
 
+// TODO REFACTOR THIS PAGE
 const OrderDetail = ({ route, navigation }: OrderDetailsListScreenProps) => {
   const [orderDetail, setOrderDetail] = useState<Order | null>(null);
   const [mapCoords, setMapCoords] = useState<TrimbleRouteCoordinates | null>(
@@ -26,7 +26,9 @@ const OrderDetail = ({ route, navigation }: OrderDetailsListScreenProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOrderBtnLoading, setIsOrderBtnLoading] = useState(false);
   const [isMapLoading, setIsMapLoading] = useState(false);
+
   const [permission, requestPermission] = Camera.useCameraPermissions();
+
   const { pictureUri, dispatch } = useStoreon<States, Events>("pictureUri");
 
   const showLimitOrdersError = (error: any) => {
@@ -185,12 +187,15 @@ const OrderDetail = ({ route, navigation }: OrderDetailsListScreenProps) => {
     [OrderStatus.not_paid]: null,
   };
 
-  console.log(orderDetail?.status)
+  console.log(orderDetail?.status);
 
   if (isLoading) return <Loader />;
   if (!orderDetail) return <NoDataText />;
   return (
-    <ScrollView contentContainerStyle={styles.orderDetailContentContainer} style={styles.orderDetailContainer}>
+    <ScrollView
+      contentContainerStyle={styles.orderDetailContentContainer}
+      style={styles.orderDetailContainer}
+    >
       <View style={styles.pointContainer}>
         <OrderWay
           delivery_date={orderDetail.delivery_date}
@@ -240,28 +245,45 @@ const OrderDetail = ({ route, navigation }: OrderDetailsListScreenProps) => {
         <View style={styles.orderDetailContent}>
           <InfoBlock
             title="Name"
-            value={`${orderDetail.shipper?.user.firstname} ${orderDetail.shipper?.user.lastname}`}
+            value={`${orderDetail.shipper?.user?.firstname} ${orderDetail.shipper?.user?.lastname}`}
             style={styles.orderInfoBlockContainer}
           />
           <InfoBlock
             title="Phone"
-            value={orderDetail.shipper?.user.phone}
+            value={orderDetail.shipper?.user?.phone}
             style={styles.orderInfoBlockContainer}
           />
         </View>
       </View>
-      {isMapLoading ? <Loader /> : (mapCoords && (
-        <View style={styles.mapPreviewContainer}>
-          <Map
-            id="MAP1"
-            endLat={+mapCoords.end.Locations[0].Coords.Lat}
-            endLng={+mapCoords.end.Locations[0].Coords.Lon}
-            startLat={+mapCoords.start.Locations[0].Coords.Lat}
-            startLng={+mapCoords.start.Locations[0].Coords.Lon}
-          />
-        </View>
-      ))}
+      {isMapLoading ? (
+        <Loader />
+      ) : (
+        mapCoords && (
+          <View style={styles.mapPreviewContainer}>
+            <PreviewMap
+              id="MAP1"
+              endLat={+mapCoords.end.Locations[0].Coords.Lat}
+              endLng={+mapCoords.end.Locations[0].Coords.Lon}
+              startLat={+mapCoords.start.Locations[0].Coords.Lat}
+              startLng={+mapCoords.start.Locations[0].Coords.Lon}
+            />
+          </View>
+        )
+      )}
       <View style={styles.actionsBlock}>
+        {orderDetail.status === OrderStatus.on_way && (
+          <CustomButton
+            accessibilityLabel="Go To Map"
+            btnType="filled"
+            title="Go deliver"
+            onPress={() =>
+              navigation.navigate(Screens.activeOrderMap, {
+                mapCoords,
+                order: orderDetail,
+              })
+            }
+          />
+        )}
         {orderDetail.status === OrderStatus.delivered &&
           (pictureUri ? (
             <Text style={{ flexDirection: "row", alignItems: "center" }}>
@@ -336,7 +358,7 @@ const styles = StyleSheet.create({
   },
   mapPreviewContainer: {
     height: 200,
-    marginVertical: 20, 
+    marginVertical: 20,
   },
 });
 

@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { Screens } from '../const'
+import { Order, TrimbleRouteCoordinates } from "../store/types"
 
 export type StackRoutes = {
   Login: undefined
@@ -9,7 +9,7 @@ export type StackRoutes = {
   OrderDetails: { orderId: number }
   Profile: undefined
   Map: undefined
-  ActiveOrderMap: { orderId: number }
+  ActiveOrderMap: { order: Order, mapCoords: TrimbleRouteCoordinates | null }
   ChatList: undefined
   ChatItem: { orderId: number }
   CameraScreen: { orderId: number }

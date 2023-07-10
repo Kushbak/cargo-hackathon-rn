@@ -32,7 +32,7 @@ const Home = ({ navigation }: HomeScreenProps) => {
     });
     socket.on(SOCKET_EVENTS.receiveMessage, (message) => {
       Toast.show({
-        text1: `${message.author.firstname} ${message.author.firstname}`,
+        text1: `${message.author?.firstname} ${message.author?.lastname}`,
         text2: message.text,
       });
     });
@@ -80,11 +80,6 @@ const Home = ({ navigation }: HomeScreenProps) => {
           name="OrdersList"
           component={OrdersList}
           options={{ headerTitle: "Orders" }}
-        />
-        <Tab.Screen
-          name="ActiveOrderMap"
-          component={ActiveOrderMap}
-          options={{ headerTitle: "Map of Active Order" }}
         />
         <Tab.Screen
           name="ChatList"

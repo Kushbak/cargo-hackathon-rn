@@ -10,6 +10,7 @@ export const Screens = {
   chatList: 'ChatList',
   chatItem: 'ChatItem',
   cameraScreen: 'CameraScreen',
+  activeOrderMap: 'ActiveOrderMap'
 } as const
 
 export const INDIVIDUAL_CARRIER_SELECT_DATA = {

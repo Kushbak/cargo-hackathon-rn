@@ -1,31 +1,62 @@
+import { forwardRef } from "react";
 import { View, StyleSheet } from "react-native";
-import WebView from "react-native-webview";
+import WebView, { WebViewMessageEvent } from "react-native-webview";
 
-type Props = {
-  id: string
+type PreviewMapProps = {
+  id: string;
   startLng: number;
   startLat: number;
   endLng: number;
   endLat: number;
 };
 
-const Map = ({ endLat, endLng, id, startLat, startLng }: Props) => {
-  const onMessage = (x: any) => {};
+export const PreviewMap = ({
+  endLat,
+  endLng,
+  id,
+  startLat,
+  startLng,
+}: PreviewMapProps) => {
+  const URL = process.env.EXPO_PUBLIC_PREVIEW_MAP_URL;
   return (
     <WebView
       id={id}
       source={{
-        uri: `${process.env.EXPO_PUBLIC_MAP_URL}?startLng=${startLng}&startLat=${startLat}&endLng=${endLng}&endLat=${endLat}`,
+        uri: `${URL}?startLng=${startLng}&startLat=${startLat}&endLng=${endLng}&endLat=${endLat}`,
       }}
       style={styles.webview}
-      onMessage={onMessage}
     />
   );
 };
+
+type MapProps = {
+  onMessage?: (data: WebViewMessageEvent) => void;
+} & PreviewMapProps;
+
+export const Map = forwardRef(
+  ({ endLat, endLng, id, startLat, startLng, onMessage }: MapProps, ref) => {
+    const URL = process.env.EXPO_PUBLIC_MAP_URL;
+
+    const handleMessage = (event: WebViewMessageEvent) => {
+      onMessage?.(event);
+    };
+
+    return (
+      <WebView
+        ref={ref}
+        id={id}
+        source={{
+          uri: `${URL}?startLng=${startLng}&startLat=${startLat}&endLng=${endLng}&endLat=${endLat}`,
+        }}
+        style={styles.webview}
+        onMessage={handleMessage}
+      />
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   webview: {
     flex: 1,
   },
 });
-export default Map;

@@ -34,7 +34,7 @@ const ChatList = ({ navigation }: ChatListScreenProps) => {
             }
           >
             <Text>
-              {item.shipper.firstname} {item.shipper.lastname}
+              {item.shipper?.user?.firstname} {item.shipper?.user?.lastname}
             </Text>
             <Text>
               {item.pickup_location} {"=>"} {item.destination}

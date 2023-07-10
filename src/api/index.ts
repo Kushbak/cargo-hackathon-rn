@@ -110,10 +110,6 @@ export const usersApi = {
     const res = await instance.post<CarrierUser>('users/carrier', data)
     return res.data
   },
-  createShipperUser: async (data: CreateUser) => {
-    const res = await instance.post<ShipperUser>('users/shipper', data)
-    return res.data
-  },
   getAllUsers: async () => {
     const res = await instance.get<User[]>('users')
     return res.data

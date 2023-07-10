@@ -43,9 +43,17 @@ export type OperatorUser = {
   company_id: number
 } & CarrierUser
 
-export type CreateUser = Omit<{
+export type CreateUser = {
+  email: string
+  role: "CARRIER"
+  phone: string
   password: string
-} & CarrierUser, 'id'>
+  physical_address: string
+  mc_dot_number: string
+  firstname: string
+  lastname: string
+  company_id: number
+}
 
 export enum OrderStatus {
   not_paid = 'not_paid',

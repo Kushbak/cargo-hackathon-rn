@@ -30,7 +30,7 @@ const Register = ({ navigation }: RegisterScreenProps) => {
     mc_dot_number: "",
     firstname: "",
     lastname: "",
-    company_id: "",
+    company_id: -1,
   });
   const [companies, setCompanies] = useState<SelectValue[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string | number>(
