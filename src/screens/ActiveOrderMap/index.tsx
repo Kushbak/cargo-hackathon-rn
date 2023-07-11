@@ -10,6 +10,8 @@ import WebView, { WebViewMessageEvent } from "react-native-webview";
 import { ActiveOrderMapScreenProps } from "../types";
 import { Map } from "../../components/Map";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import socket from "../../utils/socket";
+import { SOCKET_EVENTS } from "../../const";
 
 const ActiveOrderMap = ({ route }: ActiveOrderMapScreenProps) => {
   const [location, setLocation] = useState<LocationObjectCoords | null>(null);
@@ -17,7 +19,7 @@ const ActiveOrderMap = ({ route }: ActiveOrderMapScreenProps) => {
     boolean | null
   >(null);
   const webviewRef = useRef<WebView>(null);
-  const { mapCoords } = route.params;
+  const { mapCoords, order } = route.params;
 
   const getLocation = async () => {
     const response = await requestForegroundPermissionsAsync();
@@ -29,8 +31,8 @@ const ActiveOrderMap = ({ route }: ActiveOrderMapScreenProps) => {
   };
 
   const onMessage = (data: WebViewMessageEvent) => {
-    Toast.show({ text1: 'ROUTE CHANGED', text2: data.nativeEvent.data })
-    console.log('ROUTE CHANGED',data.nativeEvent.data)
+    Toast.show({ text1: "ROUTE CHANGED", text2: data.nativeEvent.data });
+    console.log("ROUTE CHANGED", data.nativeEvent.data);
   };
 
   useFocusEffect(
@@ -42,9 +44,14 @@ const ActiveOrderMap = ({ route }: ActiveOrderMapScreenProps) => {
         const id = setInterval(() => {
           getCurrentPositionAsync().then((data) => {
             webviewRef.current?.postMessage(JSON.stringify(data.coords));
+            socket.emit(SOCKET_EVENTS.sendLocationOrder, {
+              orderId: order.id,
+              longitude: data.coords.longitude,
+              latitude: data.coords.latitude,
+            });
             setLocation(data.coords);
           });
-        }, 10000);
+        }, 5000);
       }
     }, [hasLocationPermission])
   );

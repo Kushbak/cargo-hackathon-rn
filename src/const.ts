@@ -24,6 +24,7 @@ export const SOCKET_EVENTS = {
   sendMessage: 'orders:send-message',
   receiveMessage: 'orders:receive-message',
   createOrder: 'orders:create-order',
+  sendLocationOrder: 'orders:navigation',
 }
 
 export const ACTIVE_ORDER_STATUSES = [
